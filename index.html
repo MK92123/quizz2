@@ -93,16 +93,19 @@
     <div class="progress"><div id="bar" class="bar"></div></div>
     <div id="quiz"></div>
     <div class="row">
-      <button id="reset" onclick="resetQuiz()">Recommencer (nouvel ordre)</button>
-      <button id="next" onclick="nextQ()" disabled>Suivant</button>
-    </div>
-    <div id="score" class="score"></div>
+  <button id="reset" onclick="resetQuiz()">Recommencer (nouvel ordre)</button>
+  <button id="menu" onclick="window.location.href='https://mk92123.github.io/quizz-airfrance2/index'">
+    Retourner au menu principal
+  </button>
+  <button id="next" onclick="nextQ()" disabled>Suivant</button>
+</div>
+    
     <footer>Version 5.0 — ordre aléatoire • multi-clic: correction puis suivant • chrono 30:00</footer>
   </div>
 
 <script>
 const BASE = [
-  
+  {t:"Poids max autorisé animal AVIH ?", o:["75 kg","50 kg","100 kg","8 kg"], c:[0], e:"Jusqu’à 75 kg (animal + caisse) selon conditions."}
   ];
 
 // =====================
