@@ -1,0 +1,364 @@
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Air France</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --txt: #111827;
+      --muted: #6b7280;
+      --ok: #0f766e;
+      --bad: #b91c1c;
+      --pri: #0a66ff;
+    }
+    body {
+      margin: 0; padding: 2rem;
+      background: var(--bg);
+      color: var(--txt);
+      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.06);
+      padding: 24px;
+    }
+    header { display: flex; flex-direction: column; align-items: center; gap: .35rem; margin-bottom: 8px; }
+    header img { max-width: 220px; height: auto; display: block; }
+    h1 { margin: 4px 0 0; text-align: center; }
+    .sub {
+      color: var(--muted);
+      text-align: center;
+      margin: 6px 0 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .pill { background: #eef2ff; color: #1e3a8a; border-radius: 999px; padding: 4px 10px; font-size: .9rem; }
+    .progress { height: 10px; background: #e5e7eb; border-radius: 99px; overflow: hidden; margin: 8px 0 18px; }
+    .bar { height: 100%; width: 0; background: var(--pri); transition: width .25s; }
+    .q { font-weight: 700; margin: 10px 0 12px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { margin: .4rem 0; }
+    label { display: flex; gap: .6rem; align-items: flex-start; cursor: pointer; }
+    input[type=radio], input[type=checkbox] { margin-top: .25rem; }
+    .feed { display: none; margin-top: 12px; border-radius: 10px; padding: 10px; }
+    .ok { display: block; background: #e7f7f3; color: #065f46; }
+    .bad { display: block; background: #fdeaea; color: #7f1d1d; }
+    .row { display: flex; gap: 10px; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; }
+    button { border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+    #next { background: var(--pri); color: #fff; }
+    #next:disabled { opacity: .5; cursor: not-allowed; }
+    #reset { background: #6b7280; color: #fff; }
+    .score { margin-top: 8px; text-align: center; color: var(--muted); }
+    footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: .9rem; }
+    .timeup { color: #b91c1c; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="https://th.bing.com/th/id/R.e981a076438938f94b4bdef2cc28ed8c?rik=Tl8jWSDOnbPScw&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fair-france-logo-png-air-france-logo-airfrance-skyteam-symbol-5650.png&ehk=%2bzIUC9nKAkbnVe1Gq4lsFCWxLCR3mhuQeeenhYbyNyQ%3d&risl=&pid=ImgRaw&r=0" alt="Air France Logo" onerror="this.style.display='none'">
+      <h1>Quiz Air France</h1>
+    </header>
+    <header>
+      <p id="disclaimer" style="
+        font-size: 0.9rem;
+        color: #b91c1c;
+        background-color: #fee2e2;
+        border: 1px solid #b91c1c;
+        padding: 8px 12px;
+        border-radius: 8px;
+        max-width: 100%;
+        text-align: center;
+        margin-bottom: 12px;
+        font-weight: 700;
+      ">
+        Propriété exclusive d'un Agent AF. Toute diffusion ou reproduction non autorisée est interdite. En cas de fuite, merci de contacter kneycie@gmail.com
+        Toute diffusion ou utilisation non autorisée est interdite. 
+      </p>
+      <img src="..." alt="Air France Logo" onerror="this.style.display='none'">
+      <h1>Quiz Air France</h1>
+    </header>
+
+    <div class="sub">
+      <span id="meta" class="pill"></span>
+      <span id="timer" class="pill">Temps restant : 30:00</span>
+      <span id="liveScore" class="pill"></span>
+    </div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div id="quiz"></div>
+    <div class="row">
+      <button id="reset" onclick="resetQuiz()">Recommencer (nouvel ordre)</button>
+      <button id="next" onclick="nextQ()" disabled>Suivant</button>
+    </div>
+    <div id="score" class="score"></div>
+    <footer>Version 5.0 — ordre aléatoire • multi-clic: correction puis suivant • chrono 30:00</footer>
+  </div>
+
+<script>
+const BASE = [
+  {t:"Si un client voyage en La première (Billet d'origine sans achat d'un DOD), le client est Flying Blue Silver le client peut inviter :?", o:["1 Personne peu importe sa classe de réservation","1 Personne si l'acco voyage en J","8 personnes peu importe la classe de réservation de l'acco","Aucune limite"], c:[0], e:"1 Personne peu importe sa classe de réservation"},
+  {t:"Une urne funéraire peut :", o:["être transportée en cabine ou en soute","être transportée en cabine seulement","être transportée en soute seulement","si en cabine les dimensions doivent correspondre à celles des bagages cabine","l'urne doit être scellée","ne doit pas être visible aux clients","être présente dans le cockpit","le client doit être en possession d'un certificat de crématorium"], c:[0,3,4,5,7], e:"PAM 7.4.3 Urnes funéraires Conditions générales d'acceptation :• L'urne peut être transportée en cabine ou en soute.• Pour le transport en cabine: les dimensions doivent correspondre à celles des bagages cabine. • L'urne scellée doit être conditionnée dans un contenant ne permettant pas aux autres clients de l'identifier comme telle.• Afin d’éviter toute demande d’ouverture de l’urne"},
+  {t:"Karim fête son anniversaire aujourd'hui, afin de célébrer ça il se rend à JFK, avec un ballon 24 ANS gonflé à l'hélium, peut-il voyager avec ?", o:["Oui","Non"], c:[1], e:"7.4.5 Ballons à l'hélium : NON Bien que l’hélium ne soit pas considéré comme une Marchandise Dangereuse, leur transport est interdit en raison des risques d’explosion à bord."},
+  {t:"Quel est le poids maximum autorisé pour un bagage en soute pour un client Business Air France ?", o:["1x23 kg","2x32 kg","3x23 kg","2x23 kg"], c:[1], e:"La franchise Business est de 2 bagages de 32 kg chacun."},
+  {t:"Quelle est la franchise bagage cabine pour un client Premium Economy chez Air France ?", o:["1x12 kg","2x12 kg","2x18 kg","2 bagages mais total 12 kg"], c:[3], e:"Premium  : 2 bagages cabine TTL 12kg"},
+  {t:"Quels passagers ont accès à la zone SkyPriority ?", o:["Business","Flying Blue Gold/Platinum","Client Business voyageant sur Middle East","Client Business voyageant sur Emirates","Client La première"], c:[0,1,2], e:"SkyPriority pour Business et Flying Blue Gold/Platinum, client Business ME, attention les clients La Première s'enregistrent au vestibule, obligatoirement : traitement dédié des bagages"},
+  {t:"Quelle est la politique sur les batteries lithium en cabine ?", o:["Autorisé si protégées si inférieur à 160Wh","Interdit partout","Autorisé en soute si inférieur à 160Wh","Autorisé si inférieur à 100Wh"], c:[0], e:"Batteries lithium autorisées en cabine si protégées (≤160 Wh)."},
+  {t:"Que faire si un bagage cabine dépasse les poids/dimensions autorisés ?", o:["Transférer en soute en utilisant XBAG-CDG","Refuser l’embarquement","Regarder la preco bag et enregistrer gratuitement si disponibilité","Laisser passer"], c:[0], e:"Transfert en soute avec frais applicables."},
+  {t:"Catégories de passagers prioritaires en réacheminement ?", o:["PMR, familles, mineurs","Clients Business","Tous sans distinction","Clients fidèles"], c:[0], e:"Priorité aux PMR, familles et mineurs."},
+  {t:"Qu’est-ce qu’un PETC ?", o:["Animal en cabine","Passager handicapé","Bagage fragile","Type de billet"], c:[0], e:"PETC = animal transporté en cabine."},
+  {t:"Poids maximum autorisé pour un sac de golf ?", o:["23 kg","15 kg","32 kg","18 kg"], c:[0], e:"Sac de golf standard : 23 kg."},
+  {t:"Que faire si un client vous filme sans autorisation ?", o:["Rappeler au client que vous n'avez pas donner l'autorisation","Demandez l'arrêt de l'enregistrement","Lui rappeler qu'il n'a pas le droit de diffuser","si nécessaire appeler le manager et conserver une trace écrite de l'incident","demander au CDB de débarquer le client"], c:[0,1,2,3], e:"Informer, consigner, alerter la hiérarchie/sûreté."},
+  {t:"Sprays auto-défense autorisés en soute ?", o:["Non interdits","Oui sans restriction","Uniquement avec autorisation","Cabine seulement"], c:[0], e:"Sprays auto-défense interdits (cabine et soute)."},
+  {t:"Que faire si un client MISCO est sans visa valide et voyage le lendemain ?", o:["Vérifier le visa, proposer hébergement immédiatement","Appeler l’hébergement","Demander une autorisation exceptionnelle à la DEPAF","Réacheminer sans contrôle"], c:[0], e:"Sans visa valide, proposer un hébergement à l’aéroport et informer."},
+  {t:"Poids max pour PETC ?", o:["8 kg avec sac","15 kg","5 kg","10 kg"], c:[0], e:"Max 8 kg (animal + caisse) à placer sous le siège."},
+  {t:"Races brachycéphales en soute ?", o:["Refusées pour risque respiratoire","Acceptées avec certificat","Acceptées sans restriction","Acceptées en cabine"], c:[0], e:"Refusées en soute pour raisons de sécurité/santé."},
+  {t:"Procédure poussette à l’arrivée ?", o:["Tapis bagages à l'arrivée ou comptoir spécial","Toujours remise passerelle","Gardée à escale correspondance","Envoyée par pigeon voyageur"], c:[0], e:"Restituée à destination finale (tapis/zone hors-format selon aéroport)."},
+  {t:"Chiens catégorie 1 (pit-bull, tosa) ?", o:["Interdits vols commerciaux","Acceptés avec passeport","Carte vaccination","Document LOF"], c:[0], e:"Interdits sur vols commerciaux Air France."},
+  {t:"Limite poids bagage standard Economy ?", o:["1 bagage 23 kg","2 bagages 32 kg","1 bagage 18 kg","2 bagages 20 kg"], c:[0], e:"Economy standard : 1 bagage en soute de 23 kg."},
+  {t:"Tolérance ‘bag pool Africa’ s’applique à ?", o:["Bagages lourds excédant franchise zone Afrique","Un client voyageant pour l'afrique du Nord Maghreb","client s'enregistrant en EDS 12/13 ","Bagages à waive"], c:[0,2], e:"Tolérance de cumul de poids limitée au périmètre Afrique."},
+  {t:"Objets interdits en soute ?", o:["Allumettes de sûreté","sprays auto-défense","batteries lithium non protégées"], c:[0,1,2], e:"Articles dangereux interdits en soute."},
+  {t:"Limite poids bagage cabine Economy ?", o:["1 bagage 12 kg","2 bagages 18 kg","1 bagage 10 kg","3 bagages 10 kg"], c:[0], e:"Economy : 1 bagage cabine (total 12 kg)."},
+  {t:"Délai minimum recommandé transfert bagages ?", o:["2 heures","1 heure","3 heures","4 heures"], c:[0], e:"2 heures recommandées pour un transfert sûr."},
+  {t:"Documents pour mineurs Espagne sans AST ?", o:["AST obligatoire","Justificatif de domicile","CNI périmée","Passeport seul"], c:[0], e:"AST obligatoire selon destination."},
+  {t:"Règle recharge e-cigarette à bord ?", o:["Interdite recharge et vapotage","Recharge autorisée","Sans restriction","Interdite soute"], c:[0], e:"Recharge et vapotage interdits en vol."},
+  {t:"Critères animal accepté en cabine (PETC) ?", o:["Poids max 8 kg avec caisse sous siège","Poids max 15 kg","Poids max 5 kg","Pas de limite poids"], c:[0], e:"Max 8 kg (caisse incluse), sous le siège."},
+  {t:"Poids max bagage Business ?", o:["2 bagages 32 kg chacun","3 bagages 23 kg","1 bagage 23 kg","2 bagages 23 kg"], c:[0], e:"Business : 2 pièces de 32 kg."},
+  {t:"Limite poids bagage cabine Business ?", o:["2 bagages 18 kg","1 bagage 12 kg","1 bagage 8 kg","3 bagages 10 kg"], c:[0], e:"Business : 2 bagages cabine, total 18 kg."},
+  {t:"Règle acheminement fauteuils avec WCLB ?", o:["Batteries fixées, bornes protégées, info transporteur","Aucune précaution","Interdits","Acceptés librement"], c:[0], e:"Respect des règles spécifiques aux batteries (déconnexion/protection si requis)."},
+  {t:"Poids max autorisé animal AVIH ?", o:["75 kg","50 kg","100 kg","8 kg"], c:[0], e:"Jusqu’à 75 kg (animal + caisse) selon conditions."},
+  {t:"La PAM 6.5 traite : ", o:["des 6.5 passagers indisciplinés"," des clients P"," de la matrice de réacheminement","des PWD"], c:[0], e:"Suivre PAM 6.5 pour passagers indisciplinés."},
+  {t:"Limite âge minimum AVIH ?", o:["15 semaines avec vaccins","8 semaines sans vaccin","10 semaines libre","Aucune limite"], c:[0], e:"Minimum 15 semaines + vaccins à jour."},
+  {t:"ICP2 est caractérisé par:", o:["Comportement agressif verbal","l'incivilité comportement dit seulement perturbateur","La violence","Insultes,Intimidations"], c:[0,3], e:"ICP2 c'est un comportement agressif verbal (insultes, invectives) ou physique (intimidation) : refus explicite des propositions du personnel ou d'appliquer les consignes."},
+  {t:"Que signifie waive ‘TECHNICAL – PAIDUPGRADE’ après l'enregistrement d'un bagage de 25 kg pour un client ayant acheté un DOD en J?", o:["Waive surclassement payant (levée du $) sur franchise","Waive en cas de service payant en attente de paiement sur Altéa affichant un $","Waive pour un troisième bagage non inclus dans la franchise","Assistance PMR"], c:[0], e:"Waive pour valider un surclassement payant (icône $)."},
+  {t:"Limite poids max waive ‘TOLERANCE 1KG’ : le bagage est à 23,7 ?", o:["1 kg supplémentaire","2 kg","Pas de tolérance","5 kg"], c:[0], e:"Tolérance +1 kg max par bagage (ex. 23,9 kg)."},
+  {t:"Le comportement pertubateur : resistance passive aux propositions du personnel d'escale refus d'appliquer les conditions générales de transport, provoquer la nuissance pour les autres clients c'est :", o:["ICP 1","ICP 2"," ICP 3"], c:[0], e:"ICP1 COMPORTEMENT PERTURBATEUR."},
+  {t:"ICP 3 C'est : ", o:["La violence","La mise en danger des personnes","l'agression verbale","un comportement perturbateur"], c:[0,1], e:"Comportement violent : mise en danger des personnes ( violences verbales accrues, menaces, injures, violence physique et dégradation de matériels AF ou KL; apologie du terrorisme...) Comportement difficile à maitriser, sécurité du vol menacée."},
+  {t:"Qu’est-ce que le ‘DISCREPANCY – INTERLINE’  ?", o:["Bagage affichant un $ venant d’un vol d’une autre compagnie","Client local à l’embarquement avec $ dans son dossier","Bagage affichant un $ venant d’un vol AF","Type de billet"], c:[0], e:"Écart/incident bagage en interligne (autre compagnie)."},
+  {t:"Comment sont traités les bagages ‘SMART luggage’ ?", o:["Batterie amovible retirée pour soute","Toujours interdits","Transportés en cabine","Transport libre"], c:[0], e:"En soute, retirer la batterie si amovible (sinon refus)."},
+  {t:"Quels passagers ont priorité à l’embarquement ?", o:["PMR, familles, Flying Blue Gold/Platinum","Clients Economy","Passagers standby","Clients sans billet"], c:[0], e:"PMR, familles et clients éligibles Flying Blue prioritaires."},
+  {t:"Quel type de client à particularité non éligible au surclassement ?", o:["STCR","WCHS","ESCO","UMNR"], c:[0,2], e:"PAM 2.2.2.4 STCR/ESCO non éligible au surclassement"},
+  {t:"Un client Ultimate au Salon a le droit à : ", o:["Peu importe la classe de réservation de ses invités et sa classe de réservation, 8 invités","1 invité peu importe la classe de réservation","8 invités si il est en Business ou La première","2 invités dans toutes les circonstances"], c:[0], e:"PAM 6.1.10.1 Ultimate : 8 invités, peu importe leur classe et la classe du client Ultimate."},
+  {t:"Les ACARS sont:", o:["Des insectes", "Aircraft Communication Addressing and Reporting System","Système avion de communication et de transmission","Accompagnateur d’un client sur civière ","Carte American Express "], c:[1,2], e:"PAM 1.2 Lexique : (Aircraft Communication Addressing and Reporting System) Système avion de communication et de transmission "},
+  {t:"Comment le système d'attribution de siège est-il géré ?", o:[" Passager assi en fonction de leurs PCV","Selon leur valeur commerciale","Selon les règles d'acceptation","Selon leur date d'achat de billet"], c:[0,1,2], e:"Altéa DC assoit automatiquement les clients selon leur valeur commerciale (PCV) et selon les règles d’acceptation. Lors de la préparation du vol, il peut être nécessaire d’attribuer des sièges spécifiques à certains clients. "},
+  {t:"Chez Air France PVC désigne :", o:["La plue value des clients","Process Customer Value","Papa Victor Charlie","Passager volontonraire au changement"], c:[1], e:"PVC = Process Customer Value c'est la valeur du client pour Air France client fidèle, encarté..."},
+  {t:"Un client voyageant avec un PETC ne peut être assi", o:["En Cabine J d'un vol LC","Sur les sièges issues de secours","Sur les sièges du premier rang ou derrière une cloison","En W", "En cabine J d'un vol MC"], c:[0,1,2], e:"PAM 2.1.8 : Les PETC ne peuvent être assis : sur des rangées issues de secours, sur des sièges du premier rang ou derrière une cloison, en classe Business des flottes LC"},    
+  {t:"L'engistrement en ligne ouvre :", o:["35H avant le départ","48H avant le départ","24H avant le départ","30H avant le départ"], c:[3], e:"PAM 2.4.6.1 / L’enregistrement est ouvert de 30 heures avant le départ jusqu'à l'HLE"},
+  {t:"Sur LC le premier pax à bord est prévu à ", o:["H-50 du départ","H-60 du départ","H-35 du départ","H-40 du départ"], c:[0], e:"H-50 du départ PAM 2.5.7"},
+  {t:"Sur MC le premier pax à bord est prévu à ", o:["H-50 du départ","H-60 du départ","H-30 du départ","H-40 du départ"], c:[2], e:"H-30 du départ PAM 2.5.7"},
+  {t:"Les clients de la Zone 2 sont : ", o:["Clients en Premium / Premium Comfort ","Clients en Business","Club 2000 / Skippers  ","Platinum for life en Y ou W","Platinum et Gold en Y ou W", "Clients SkyTeam : SkyTeam Elite Plus en Y ou W" ], c:[0,3,4,5], e:"PAM 2.5.8.2 Pax en W, Clients abonnées, Platinum et Gold en W ou Y, clients skyteam en W ou J Skyteam Elite plus "}
+  ];
+
+// =====================
+// Utilitaires
+// =====================
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Mélange options et recalcule les index corrects
+function shuffleOptions(q) {
+  const pairs = q.o.map((text, idx) => ({ text, idx }));
+  shuffle(pairs);
+  q.o = pairs.map(p => p.text);
+  const newC = [];
+  pairs.forEach((p, newIdx) => { if (q.c.includes(p.idx)) newC.push(newIdx); });
+  q.c = newC.sort((a,b)=>a-b);
+  return q;
+}
+
+// =====================
+// État
+// =====================
+let Q = [];
+let i = 0;
+let score = 0;
+let timer = 30 * 60;
+let ticker = null;
+let currentSel = new Set();
+let phase = "answer"; // 'answer' -> corriger; 'review' -> passer à la suivante
+
+// =====================
+// Démarrage / rendu
+// =====================
+function initQuiz() {
+  Q = BASE.map(q => ({ t: q.t, o: [...q.o], c: [...q.c], e: q.e })).map(shuffleOptions);
+  shuffle(Q);
+  i = 0; score = 0; currentSel = new Set(); phase = "answer";
+  document.getElementById('next').disabled = true;
+  render();
+  startTimer();
+}
+
+function render() {
+  const bar = document.getElementById('bar');
+  const meta = document.getElementById('meta');
+  const sc = document.getElementById('liveScore');
+  const qn = Q[i];
+  const total = Q.length;
+
+  meta.textContent = `Question ${i + 1} / ${total}`;
+  bar.style.width = `${Math.round((i / total) * 100)}%`;
+  sc.textContent = `Score : ${score} / ${total}`;
+
+  const isMulti = qn.c.length > 1;
+  const inputType = isMulti ? 'checkbox' : 'radio';
+
+  let wrap = `<div class="q">${qn.t}${isMulti ? " <span style='color:#6b7280;font-weight:400'>(plusieurs réponses)</span>" : ""}</div><ul>`;
+  qn.o.forEach((opt, idx) => {
+    wrap += `
+      <li>
+        <label>
+          <input type="${inputType}" name="opt${i}" value="${idx}" onclick="toggleSel(${idx})">
+          ${opt}
+        </label>
+      </li>`;
+  });
+  wrap += `</ul><div id="feed" class="feed"></div>`;
+
+  document.getElementById('quiz').innerHTML = wrap;
+  phase = "answer";
+  document.getElementById('next').textContent = "Suivant";
+  document.getElementById('next').disabled = true;
+  updateTimerUI();
+}
+
+function toggleSel(idx) {
+  const input = document.querySelector(`input[name="opt${i}"][value="${idx}"]`);
+  if (input.type === "radio") {
+    currentSel = new Set([idx]);
+  } else {
+    if (input.checked) currentSel.add(idx); else currentSel.delete(idx);
+  }
+  document.getElementById('next').disabled = currentSel.size === 0;
+}
+
+// =====================
+// Suivant: correction puis avance
+// =====================
+function nextQ() {
+  const qn = Q[i];
+  const feed = document.getElementById('feed');
+
+  if (phase === "answer") {
+    if (currentSel.size === 0) {
+      alert("Choisis au moins une réponse.");
+      return;
+    }
+    // correction
+    const correct = new Set(qn.c);
+    let ok = (currentSel.size === correct.size);
+    if (ok) {
+      for (const v of currentSel) if (!correct.has(v)) { ok = false; break; }
+    }
+
+    if (ok) {
+      score++;
+      feed.className = 'feed ok';
+      feed.textContent = `Bonne réponse. ${qn.e}`;
+    } else {
+      feed.className = 'feed bad';
+      const corrLabels = qn.c.map(idx => `"${qn.o[idx]}"`).join(", ");
+      feed.innerHTML = `Mauvaise réponse. Bonnes réponses : ${corrLabels}. ${qn.e}`;
+    }
+    document.getElementById('liveScore').textContent = `Score : ${score} / ${Q.length}`;
+
+    // verrouiller les inputs
+    document.querySelectorAll(`input[name="opt${i}"]`).forEach(el => el.disabled = true);
+
+    // passer en phase review
+    phase = "review";
+    document.getElementById('next').textContent = "Continuer";
+    document.getElementById('next').disabled = false;
+    return;
+  }
+
+  // phase === 'review' -> passer à la question suivante
+  i++;
+  currentSel = new Set();
+  if (i < Q.length) render();
+  else finish();
+}
+
+// =====================
+// Timer & fin
+// =====================
+function resetQuiz() {
+  stopTimer();
+  timer = 30 * 60;
+  initQuiz();
+}
+
+function finish() {
+  stopTimer();
+  const total = Q.length;
+  const pct = Math.round(100 * score / total);
+  document.getElementById('bar').style.width = '100%';
+  document.getElementById('meta').textContent = 'Terminé ✅';
+  document.getElementById('quiz').innerHTML = `
+    <div class="q">Bravo ! Tu as terminé le quiz.</div>
+    <p class="score">Score final : <strong>${score}/${total}</strong> (${pct}%).</p>
+    <p>Tu peux cliquer sur “Recommencer (nouvel ordre)” pour rejouer.</p>`;
+  document.getElementById('next').disabled = true;
+  document.getElementById('liveScore').textContent = `Score final : ${score} / ${total} (${pct}%)`;
+}
+
+function startTimer() {
+  stopTimer();
+  ticker = setInterval(() => {
+    timer--;
+    if (timer <= 0) {
+      document.getElementById('timer').classList.add('timeup');
+      document.getElementById('timer').textContent = "Temps écoulé";
+      finish();
+    } else {
+      updateTimerUI();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (ticker) { clearInterval(ticker); ticker = null; }
+}
+
+function updateTimerUI() {
+  const m = Math.floor(timer / 60);
+  const s = timer % 60;
+  document.getElementById('timer').textContent =
+    `Temps restant : ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+// =====================
+// Mot de passe & lancement
+// =====================
+function askPassword() {
+  const pass = prompt("Entrez le mot de passe pour accéder au quiz :");
+  if (pass === "AF2025") {
+    initQuiz();
+  } else {
+    alert("Mot de passe incorrect. Accès refusé.");
+    document.getElementById('quiz').innerHTML =
+      "<p style='color:red; text-align:center; font-weight:bold;'>Accès refusé : mot de passe incorrect.</p>";
+    document.getElementById('next').disabled = true;
+    document.getElementById('reset').disabled = true;
+    document.getElementById('meta').textContent = '';
+    document.getElementById('timer').textContent = '';
+    document.getElementById('liveScore').textContent = '';
+  }
+}
+
+askPassword();
+</script>
+
+</body>
+</html>
